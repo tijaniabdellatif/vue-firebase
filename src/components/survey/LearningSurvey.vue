@@ -29,6 +29,13 @@
         <p
           v-if="invalidInput"
         >One or more input fields are invalid. Please check your provided data.</p>
+
+        <p v-if="errorResponse">
+           {{errorResponse.type}}
+          <span style='color:red'> {{errorResponse.status}}</span>
+          <span style='color:green'> {{errorResponse.text}}</span>
+
+        </p>
         <div>
           <base-button>Submit</base-button>
         </div>
@@ -45,7 +52,8 @@ export default {
       enteredName: '',
       chosenRating: null,
       invalidInput: false,
-      endpoint : 'https://vue-http-demo-4be48-default-rtdb.firebaseio.com/'
+      endpoint : 'https://vue-http-demo-4be48-default-rtdb.firebaseio.com/',
+      errorResponse : null
     };
   },
  // emits: ['survey-submit'],
@@ -67,6 +75,7 @@ export default {
     fetchData(username,rating,type)
     {
 
+      this.errorResponse = null;
         fetch(this.endpoint+'/surveys.json',{
 
           method:type,
@@ -74,10 +83,31 @@ export default {
             'Content-type':'application/json'
           },
 
-          body:JSON.stringify({
+          body:{
             name:username,
             rating:rating
+          }
+        })
+
+          .then((response) => {
+
+                   if(response.ok){
+
+                      console.log('good');
+                   }
+                   else{
+                     throw new Error('Could not save the data');
+                   }
           })
+
+          .catch((error) => {
+
+              this.errorResponse = {
+
+                   type:'Server Error',
+                   status:400,
+                   text:error.message
+              };
         })
 
       }
