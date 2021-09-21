@@ -44,9 +44,10 @@ export default {
       enteredName: '',
       chosenRating: null,
       invalidInput: false,
+      endpoint : 'https://vue-http-demo-4be48-default-rtdb.firebaseio.com/'
     };
   },
-  emits: ['survey-submit'],
+ // emits: ['survey-submit'],
   methods: {
     submitSurvey() {
       if (this.enteredName === '' || !this.chosenRating) {
@@ -55,14 +56,35 @@ export default {
       }
       this.invalidInput = false;
 
-      this.$emit('survey-submit', {
+      /**
+       *   this.$emit('survey-submit', {
         userName: this.enteredName,
         rating: this.chosenRating,
       });
+        */
+
+
+      this.fetchData(this.enteredName,this.chosenRating);
 
       this.enteredName = '';
       this.chosenRating = null;
     },
+
+    fetchData(username,rating)
+    {
+
+         fetch(this.endpoint+'/surveys.json',{
+
+           method:'POST',
+           headers:{
+             'Content-type':'application/json'
+           },
+           body:JSON.stringify({
+             name:username,
+             rating:rating
+           })
+         })
+    }
   },
 };
 </script>
