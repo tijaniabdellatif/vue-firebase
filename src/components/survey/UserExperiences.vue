@@ -5,7 +5,15 @@
       <div>
         <base-button @click="loadExperiences">Load Submitted Experiences</base-button>
       </div>
-      <ul>
+
+      <p v-if='isLoading'>
+        <is-loading :title="loading">
+         <template v-slot:loading>
+
+         </template>
+        </is-loading>
+      </p>
+      <ul v-else>
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -19,27 +27,32 @@
 
 <script>
 import SurveyResult from './SurveyResult.vue';
-
+import IsLoading from '@/components/UI/IsLoading';
 export default {
   // props: ['results'],
 
   components: {
+    IsLoading,
     SurveyResult,
   },
 
   data() {
 
     return {
-      results: []
+      results: [],
+      isLoading : false
     }
   },
 
   methods: {
     loadExperiences() {
+
+      this.isLoading = true;
         fetch('https://vue-http-demo-4be48-default-rtdb.firebaseio.com/surveys.json').then((response) => {
            if(response.ok){ return response.json()}
         }).then((data) => {
 
+           this.isLoading = false;
             const results = [];
             for(const id in data)
             {
@@ -54,6 +67,10 @@ export default {
             this.results = results;
         })
     }
+  },
+
+  mounted() {
+     this.loadExperiences();
   }
 }
 </script>
