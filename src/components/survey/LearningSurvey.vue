@@ -39,6 +39,7 @@
 
 <script>
 export default {
+
   data() {
     return {
       enteredName: '',
@@ -56,35 +57,30 @@ export default {
       }
       this.invalidInput = false;
 
-      /**
-       *   this.$emit('survey-submit', {
-        userName: this.enteredName,
-        rating: this.chosenRating,
-      });
-        */
 
-
-      this.fetchData(this.enteredName,this.chosenRating);
+      this.fetchData(this.enteredName,this.chosenRating,'POST');
 
       this.enteredName = '';
       this.chosenRating = null;
     },
 
-    fetchData(username,rating)
+    fetchData(username,rating,type)
     {
 
-         fetch(this.endpoint+'/surveys.json',{
+        fetch(this.endpoint+'/surveys.json',{
 
-           method:'POST',
-           headers:{
-             'Content-type':'application/json'
-           },
-           body:JSON.stringify({
-             name:username,
-             rating:rating
-           })
-         })
-    }
+          method:type,
+          headers:{
+            'Content-type':'application/json'
+          },
+
+          body:JSON.stringify({
+            name:username,
+            rating:rating
+          })
+        })
+
+      }
   },
 };
 </script>
