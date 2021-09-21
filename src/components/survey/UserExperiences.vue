@@ -13,7 +13,7 @@
          </template>
         </is-loading>
       </p>
-      <ul v-else>
+      <ul v-else-if="!isLoading && results &&results.length > 0">
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -21,6 +21,10 @@
           :rating="result.rating"
         ></survey-result>
       </ul>
+
+      <div v-else>
+        <p>no data provided</p>
+      </div>
     </base-card>
   </section>
 </template>
