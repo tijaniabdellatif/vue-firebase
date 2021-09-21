@@ -8,12 +8,23 @@
 
       <p v-if='isLoading'>
         <is-loading :title="loading">
-         <template v-slot:loading>
+          <template v-slot:loading>
 
-         </template>
+          </template>
         </is-loading>
       </p>
-      <ul v-else-if="!isLoading && results &&results.length > 0">
+
+      <p v-else-if='!isLoading && error'>
+        {{error.statusText}} <span style='color:red'>{{error.status}}</span>
+      </p>
+
+
+      <p v-else-if='!isLoading && (!results || results.length === 0)'>
+         No data provided right now
+       </p>
+
+
+      <ul v-else>
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -22,9 +33,7 @@
         ></survey-result>
       </ul>
 
-      <div v-else>
-        <p>no data provided</p>
-      </div>
+
     </base-card>
   </section>
 </template>
@@ -44,7 +53,8 @@ export default {
 
     return {
       results: [],
-      isLoading : false
+      isLoading : false,
+      error : null
     }
   },
 
@@ -52,7 +62,9 @@ export default {
     loadExperiences() {
 
       this.isLoading = true;
-        fetch('https://vue-http-demo-4be48-default-rtdb.firebaseio.com/surveys.json').then((response) => {
+      this.error = null;
+        fetch('https://vue-http-demo-4be48-default-rtdb.firebaseio.com/surveys.json')
+          .then((response) => {
            if(response.ok){ return response.json()}
         }).then((data) => {
 
@@ -69,6 +81,17 @@ export default {
             }
 
             this.results = results;
+        }).catch((error) => {
+
+          console.log(error);
+          this.isLoading=false;
+
+               this.error = {
+                 error:error,
+                 type:'Server Error',
+                 status:404,
+                 statusText:"Failed to fetch data - try again"
+               }
         })
     }
   },
